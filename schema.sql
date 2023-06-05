@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS authors, posts;
+DROP TABLE IF EXISTS posts, authors;
 
 CREATE TABLE authors (
     id BIGSERIAL PRIMARY KEY,
