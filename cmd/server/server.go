@@ -31,20 +31,22 @@ func main() {
 	postgrUser := os.Getenv("dbuser")
 	postgrPwd := os.Getenv("dbpass")
 	dbhost := os.Getenv("dbhost")
+	fmt.Printf("conncting to postgresql... ")
 	db2, err := postgres.New("postgres://" + postgrUser + ":" + postgrPwd + "@" + dbhost + "/GoNews")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("conncting to postgresql... success...\n")
+	fmt.Printf("success...\n")
 
 	// Документная БД MongoDB.
 	mongoDB := os.Getenv("mongodb")
 	collection := "posts"
+	fmt.Printf("connecting to MongoDB... ")
 	db3, err := mongo.New("mongodb://"+dbhost+":27017/", mongoDB, collection)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("connecting to MongoDB... success...\n")
+	fmt.Printf("success...\n")
 
 	_, _, _ = db, db2, db3
 
@@ -58,6 +60,6 @@ func main() {
 	// Предаём серверу маршрутизатор запросов,
 	// поэтому сервер будет все запросы отправлять на маршрутизатор.
 	// Маршрутизатор будет выбирать нужный обработчик.
-	fmt.Printf("listening on 8080\n")
+	fmt.Printf("start server... listening on :8080\n")
 	http.ListenAndServe(":8080", srv.api.Router())
 }
