@@ -40,3 +40,5 @@ export dbuser=yourDBuser
 export dbpass=yourSomeStrongPassword
 
 export dbhost=yourDBhost.domain
+
+export mongodb=yourMongoDBname

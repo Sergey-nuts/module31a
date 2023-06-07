@@ -38,7 +38,9 @@ func main() {
 	fmt.Printf("conncting to postgresql... success...\n")
 
 	// Документная БД MongoDB.
-	db3, err := mongo.New("mongodb://" + dbhost + ":27017/")
+	mongoDB := os.Getenv("mongodb")
+	collection := "posts"
+	db3, err := mongo.New("mongodb://"+dbhost+":27017/", mongoDB, collection)
 	if err != nil {
 		log.Fatal(err)
 	}

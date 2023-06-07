@@ -9,16 +9,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-	dbName         = "GoNews"
-	collectionName = "posts"
-)
+// const (
+// 	dbName         = "GoNews"
+// 	collectionName = "posts"
+// )
 
 type Mongodb struct {
-	db *mongo.Client
+	db         *mongo.Client
+	dbName     string
+	collection string
 }
 
-func New(conf string) (*Mongodb, error) {
+func New(conf, dbName, coll string) (*Mongodb, error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(conf))
 	if err != nil {
 		return nil, err
@@ -27,12 +29,12 @@ func New(conf string) (*Mongodb, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Mongodb{client}, nil
+	return &Mongodb{client, dbName, coll}, nil
 }
 
 // получение всех публикаций
 func (m *Mongodb) Posts() ([]storage.Post, error) {
-	coll := m.db.Database(dbName).Collection(collectionName)
+	coll := m.db.Database(m.dbName).Collection(m.collection)
 	filter := bson.D{}
 	cur, err := coll.Find(context.Background(), filter)
 	if err != nil {
@@ -54,7 +56,7 @@ func (m *Mongodb) Posts() ([]storage.Post, error) {
 
 // создание новой публикации
 func (m *Mongodb) AddPost(p storage.Post) error {
-	coll := m.db.Database(dbName).Collection(collectionName)
+	coll := m.db.Database(m.dbName).Collection(m.collection)
 	_, err := coll.InsertOne(context.Background(), p)
 	if err != nil {
 		return err
@@ -64,7 +66,7 @@ func (m *Mongodb) AddPost(p storage.Post) error {
 
 // обновление публикации
 func (m *Mongodb) UpdatePost(p storage.Post) error {
-	coll := m.db.Database(dbName).Collection(collectionName)
+	coll := m.db.Database(m.dbName).Collection(m.collection)
 	filter := bson.D{{"id", p.ID}}
 	update := bson.D{{"$set", bson.D{
 		{"title", p.Title},
@@ -84,7 +86,7 @@ func (m *Mongodb) UpdatePost(p storage.Post) error {
 
 // удаление публикации по ID
 func (m *Mongodb) DeletePost(p storage.Post) error {
-	coll := m.db.Database(dbName).Collection(collectionName)
+	coll := m.db.Database(m.dbName).Collection(m.collection)
 	filter := bson.D{{"id", p.ID}}
 	_, err := coll.DeleteOne(context.Background(), filter)
 	if err != nil {
